@@ -1,0 +1,13 @@
+{
+  "id": "overflow",
+  "name": "overflow",
+  "set": "set_a",
+  "source": "pragma solidity ^0.4.15;\n\ncontract Overflow {\n    uint private sellerBalance=0;\n    \n    function add(uint value) returns (bool){\n        sellerBalance += value; // possible overflow\n\n        // possible auditor assert\n        // assert(sellerBalance >= value); \n    } \n\n    function safe_add(uint value) returns (bool){\n        require(value + sellerBalance >= sellerBalance);\n        sellerBalance += value; \n    } \n}\n",
+  "reference": {
+    "root_cause": "Compiled with Solidity ^0.4.15, which has no built-in overflow checks. add() does `sellerBalance += value` with no require that the sum did not wrap, so a large value overflows the total.",
+    "impact": "An attacker can overflow the balance accounting, wrapping the total and corrupting the contract's state.",
+    "exploit": "Call add(type(uint).max) to wrap sellerBalance to a small value, desyncing the accounting.",
+    "fix": "Use Solidity ^0.8.0 (built-in checks) or SafeMath, or add `require(sellerBalance + value >= sellerBalance)` as in safe_add()."
+  },
+  "source_file": "external/not-so-smart-contracts/integer_overflow/integer_overflow_1.sol"
+}

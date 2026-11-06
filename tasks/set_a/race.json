@@ -1,0 +1,13 @@
+{
+  "id": "race",
+  "name": "race",
+  "set": "set_a",
+  "source": "pragma solidity ^0.4.16;\n\n// https://github.com/ethereum/EIPs/issues/20\ncontract ERC20 {\n    function totalSupply() constant returns (uint totalSupply);\n    function balanceOf(address _owner) constant returns (uint balance);\n    function transfer(address _to, uint _value) returns (bool success);\n    function transferFrom(address _from, address _to, uint _value) returns (bool success);\n    function approve(address _spender, uint _value) returns (bool success);\n    function allowance(address _owner, address _spender) constant returns (uint remaining);\n    event Transfer(address indexed _from, address indexed _to, uint _value);\n    event Approval(address indexed _owner, address indexed _spender, uint _value);\n}\n\ncontract RaceCondition{\n    address private owner;\n    uint public price;\n    ERC20 token;\n\n    function RaceCondition(uint _price, ERC20 _token)\n        public \n    {\n        owner = msg.sender;\n        price = _price;\n        token = _token;\n    }\n\n    // If the owner sees someone calls buy\n    // he can call changePrice to set a new price\n    // If his transaction is mined first, he can\n    // receive more tokens than excepted by the new buyer\n    function buy(uint new_price) payable\n        public\n    {\n        require(msg.value >= price);\n\n        // we assume that the RaceCondition contract\n        // has enough allowance\n        token.transferFrom(msg.sender, owner, price);\n\n        price = new_price;\n        owner = msg.sender;\n    }\n\n    function changePrice(uint new_price){\n        require(msg.sender == owner);\n        price = new_price; \n    }\n\n}\n",
+  "reference": {
+    "root_cause": "buy() is front-runnable: it pulls tokens at the current `price` and only then updates `price` and `owner`. The owner can front-run a buyer with changePrice() to raise the price, or a buyer can front-run the owner's changePrice() to buy at the old price.",
+    "impact": "The owner can extract more tokens than a buyer expects, or a buyer can buy at a stale price, breaking the intended pricing.",
+    "exploit": "The owner sees buy(new_price) in the mempool and submits changePrice(higher) with a higher gas price so it mines first; the buyer then pays the higher price while the contract state updates afterward.",
+    "fix": "Use commit-reveal or an atomic price update; require the caller to accept the current price in the same transaction and update state before external calls."
+  },
+  "source_file": "external/not-so-smart-contracts/race_condition/RaceCondition.sol"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "mut_overflow",
+  "name": "mutated overflow",
+  "set": "set_b",
+  "source": "pragma solidity ^0.4.15;\n\ncontract BalanceAccumulator {\n    uint private total=0;\n    \n    function accumulate(uint amount) returns (bool){\n        total += amount; // possible overflow\n\n        // possible auditor assert\n        // assert(total >= amount); \n    } \n\n    function accumulateSafe(uint amount) returns (bool){\n        require(amount + total >= total);\n        total += amount; \n    } \n}\n",
+  "reference": {
+    "root_cause": "Compiled with Solidity ^0.4.15, which has no built-in overflow checks. accumulate() does `total += amount` with no require that the sum did not wrap, so a large amount overflows the total.",
+    "impact": "An attacker can overflow the balance accounting, wrapping the total and corrupting the contract's state.",
+    "exploit": "Call accumulate(type(uint).max) to wrap total to a small amount, desyncing the accounting.",
+    "fix": "Use Solidity ^0.8.0 (built-in checks) or SafeMath, or accumulate `require(total + amount >= total)` as in accumulateSafe()."
+  },
+  "source_file": "mutated from integer_overflow/integer_overflow_1.sol"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "unprotected",
+  "name": "unprotected",
+  "set": "set_a",
+  "source": "pragma solidity ^0.4.15;\n\ncontract Unprotected{\n    address private owner;\n\n    modifier onlyowner {\n        require(msg.sender==owner);\n        _;\n    }\n\n    function Unprotected()\n        public \n    {\n        owner = msg.sender;\n    }\n\n    // This function should be protected\n    function changeOwner(address _newOwner) \n        public\n    {\n       owner = _newOwner;\n    }\n\n    function changeOwner_fixed(address _newOwner) \n        public \n        onlyowner\n    {\n       owner = _newOwner;\n    }\n}\n",
+  "reference": {
+    "root_cause": "changeOwner() has no access-control modifier. Anyone can call it and set themselves (or any address) as the owner, since `onlyowner` is defined but never applied to the state-changing function.",
+    "impact": "Full loss of privileged control over the contract; the attacker becomes the owner and can perform any owner-only action.",
+    "exploit": "Call changeOwner(attackerAddress) from any wallet; the owner is overwritten with no authorization check.",
+    "fix": "Apply the `onlyowner` modifier to changeOwner (as in changeOwner_fixed), or use OpenZeppelin Ownable with onlyOwner."
+  },
+  "source_file": "external/not-so-smart-contracts/unprotected_function/Unprotected.sol"
+}

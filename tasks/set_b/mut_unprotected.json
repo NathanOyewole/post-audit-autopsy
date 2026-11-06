@@ -1,0 +1,13 @@
+{
+  "id": "mut_unprotected",
+  "name": "mutated unprotected",
+  "set": "set_b",
+  "source": "pragma solidity ^0.4.15;\n\ncontract OwnerBox{\n    address private authority;\n\n    modifier onlyAuthority {\n        require(msg.sender==authority);\n        _;\n    }\n\n    function OwnerBox()\n        public \n    {\n        authority = msg.sender;\n    }\n\n    // This function should be protected\n    function assignAuthority(address _newOwner) \n        public\n    {\n       authority = _newOwner;\n    }\n\n    function assignAuthoritySafe(address _newOwner) \n        public \n        onlyAuthority\n    {\n       authority = _newOwner;\n    }\n}\n",
+  "reference": {
+    "root_cause": "assignAuthority() has no access-control modifier. Anyone can call it and set themselves (or any address) as the authority, since `onlyAuthority` is defined but never applied to the state-changing function.",
+    "impact": "Full loss of privileged control over the contract; the attacker becomes the authority and can perform any authority-only action.",
+    "exploit": "Call assignAuthority(attackerAddress) from any wallet; the authority is overwritten with no authorization check.",
+    "fix": "Apply the `onlyAuthority` modifier to assignAuthority (as in assignAuthoritySafe), or use OpenZeppelin Ownable with onlyOwner."
+  },
+  "source_file": "mutated from unprotected_function/Unprotected.sol"
+}

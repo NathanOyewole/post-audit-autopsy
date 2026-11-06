@@ -1,0 +1,13 @@
+{
+  "id": "mut_race",
+  "name": "mutated race",
+  "set": "set_b",
+  "source": "pragma solidity ^0.4.16;\n\n// https://github.com/ethereum/EIPs/issues/20\ncontract ERC20 {\n    function totalSupply() constant returns (uint totalSupply);\n    function balanceOf(address _owner) constant returns (uint balance);\n    function transfer(address _to, uint _value) returns (bool success);\n    function transferFrom(address _from, address _to, uint _value) returns (bool success);\n    function approve(address _spender, uint _value) returns (bool success);\n    function allowance(address _owner, address _spender) constant returns (uint remaining);\n    event Transfer(address indexed _from, address indexed _to, uint _value);\n    event Approval(address indexed _owner, address indexed _spender, uint _value);\n}\n\ncontract PriceRace{\n    address private admin;\n    uint public rate;\n    ERC20 asset;\n\n    function PriceRace(uint _price, ERC20 _token)\n        public \n    {\n        admin = msg.sender;\n        rate = _price;\n        asset = _token;\n    }\n\n    // If the admin sees someone calls purchase\n    // he can call updateRate to set a new rate\n    // If his transaction is mined first, he can\n    // receive more tokens than excepted by the new buyer\n    function purchase(uint new_rate) payable\n        public\n    {\n        require(msg.value >= rate);\n\n        // we assume that the PriceRace contract\n        // has enough allowance\n        asset.transferFrom(msg.sender, admin, rate);\n\n        rate = new_rate;\n        admin = msg.sender;\n    }\n\n    function updateRate(uint new_rate){\n        require(msg.sender == admin);\n        rate = new_rate; \n    }\n\n}\n",
+  "reference": {
+    "root_cause": "purchase() is front-runnable: it pulls tokens at the current `rate` and only then updates `rate` and `admin`. The admin can front-run a buyer with updateRate() to raise the rate, or a buyer can front-run the admin's updateRate() to purchase at the old rate.",
+    "impact": "The admin can extract more tokens than a buyer expects, or a buyer can purchase at a stale rate, breaking the intended pricing.",
+    "exploit": "The admin sees purchase(new_rate) in the mempool and submits updateRate(higher) with a higher gas rate so it mines first; the buyer then pays the higher rate while the contract state updates afterward.",
+    "fix": "Use commit-reveal or an atomic rate update; require the caller to accept the current rate in the same transaction and update state before external calls."
+  },
+  "source_file": "mutated from race_condition/RaceCondition.sol"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "ctl_erc20",
+  "name": "ctl_erc20",
+  "set": "controls",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract SimpleToken {\n    mapping(address => uint) public balanceOf;\n    uint public totalSupply;\n\n    constructor(uint supply) {\n        totalSupply = supply;\n        balanceOf[msg.sender] = supply;\n    }\n\n    function transfer(address to, uint amount) external returns (bool) {\n        require(balanceOf[msg.sender] >= amount, \"insufficient\");\n        balanceOf[msg.sender] -= amount;\n        balanceOf[to] += amount;\n        return true;\n    }\n}\n",
+  "reference": {
+    "root_cause": "No vulnerability. Balance is checked before subtraction and updated atomically; no external calls, no privileged functions.",
+    "impact": "None.",
+    "exploit": "None.",
+    "fix": "None required."
+  },
+  "source_file": "hand-written benign"
+}

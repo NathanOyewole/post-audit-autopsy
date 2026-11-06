@@ -1,0 +1,13 @@
+{
+  "id": "ctl_vault",
+  "name": "ctl_vault",
+  "set": "controls",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract SafeVault {\n    mapping(address => uint) public balances;\n\n    function deposit() external payable {\n        balances[msg.sender] += msg.value;\n    }\n\n    function withdraw(uint amount) external {\n        require(balances[msg.sender] >= amount, \"insufficient\");\n        balances[msg.sender] -= amount;\n        (bool ok, ) = msg.sender.call{value: amount}(\"\");\n        require(ok, \"send failed\");\n    }\n}\n",
+  "reference": {
+    "root_cause": "No vulnerability. The balance is decremented before the external call (checks-effects-interactions), and the amount is bounded by the caller's balance.",
+    "impact": "None.",
+    "exploit": "None.",
+    "fix": "None required."
+  },
+  "source_file": "hand-written benign"
+}
