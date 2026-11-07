@@ -7,7 +7,7 @@ OUT = ROOT / "dist"
 OUT.mkdir(exist_ok=True)
 
 INCLUDE_DIRS = ["harness", "tasks", "docs"]
-INCLUDE_FILES = ["README.md"]
+INCLUDE_FILES = ["README.md", "RESULTS.md"]
 EXCLUDE = {"__pycache__", ".git", "external", "dist", "results"}
 
 
