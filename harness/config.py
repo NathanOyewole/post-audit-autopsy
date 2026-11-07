@@ -6,6 +6,12 @@ AUTH_PATH = os.path.expanduser("~/.hermes/auth.json")
 
 
 def nous_credentials():
+    """API credentials: env vars first, then the Hermes auth file."""
+    import os
+    base = os.getenv("OPENAI_BASE_URL")
+    key = os.getenv("OPENAI_API_KEY")
+    if base and key:
+        return {"base_url": base.rstrip("/"), "api_key": key}
     d = json.load(open(AUTH_PATH))
     p = d["providers"]["nous"]
     return {
@@ -29,6 +35,9 @@ RUBRIC = {
     "exploit_path": 2,    # concrete attack path / steps
     "fix": 2,             # correct fix
 }
+
+TEMPERATURE = 0.0
+RUNS_PER_TASK = 1
 
 TASK_PROMPT = """You are a smart-contract security auditor.
 

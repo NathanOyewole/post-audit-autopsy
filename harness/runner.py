@@ -43,6 +43,7 @@ def run_one(client, model, task, timeout=600):
                 model=model,
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=8192,
+                temperature=config.TEMPERATURE,
                 timeout=timeout,
             )
             msg = resp.choices[0].message

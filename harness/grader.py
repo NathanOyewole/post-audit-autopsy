@@ -48,6 +48,7 @@ def grade_one(client, judge_model, task, answer):
                 model=judge_model,
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=2048,
+                temperature=config.TEMPERATURE,
                 timeout=180,
             )
             text = resp.choices[0].message.content or ""

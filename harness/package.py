@@ -1,4 +1,4 @@
-"""Package the eval into a submission ZIP (code only, <= 50 MB)."""
+"""Package the eval into a submission ZIP (code + supporting files, <= 50 MB)."""
 import zipfile
 from pathlib import Path
 
@@ -7,8 +7,9 @@ OUT = ROOT / "dist"
 OUT.mkdir(exist_ok=True)
 
 INCLUDE_DIRS = ["harness", "tasks", "docs"]
-INCLUDE_FILES = ["README.md", "RESULTS.md"]
-EXCLUDE = {"__pycache__", ".git", "external", "dist", "results"}
+INCLUDE_FILES = ["README.md", "RESULTS.md", "requirements.txt", ".env.example"]
+INCLUDE_RESULTS = ["raw.jsonl", "graded.jsonl", "summary.json"]
+EXCLUDE = {"__pycache__", ".git", "external", "dist"}
 
 
 def main():
@@ -24,10 +25,11 @@ def main():
             p = ROOT / f
             if p.exists():
                 z.write(p, p.relative_to(ROOT))
-        # include results summary if present
-        summary = ROOT / "results" / "summary.json"
-        if summary.exists():
-            z.write(summary, "results/summary.json")
+        res = ROOT / "results"
+        for name in INCLUDE_RESULTS:
+            p = res / name
+            if p.exists():
+                z.write(p, f"results/{name}")
     size = zip_path.stat().st_size / 1024 / 1024
     print(f"wrote {zip_path} ({size:.2f} MB)")
 
