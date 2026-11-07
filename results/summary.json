@@ -1,0 +1,74 @@
+{
+  "meituan/longcat-2.5:free": {
+    "set_a_mean": 5.4,
+    "set_b_mean": 7.0,
+    "gap_A_minus_B": -1.6,
+    "set_c_mean": 5.0,
+    "control_accuracy": 6.5,
+    "n": 14,
+    "per_task": {
+      "unprotected": 10,
+      "mut_overflow": 10,
+      "mut_unprotected": 10,
+      "kotet": 0,
+      "overflow": 9,
+      "race": 8,
+      "rubixi": 0,
+      "mut_kotet": 8,
+      "mut_race": 7,
+      "mut_rubixi": 0,
+      "dao": 10,
+      "spankchain": 0,
+      "ctl_erc20": 4,
+      "ctl_vault": 9
+    }
+  },
+  "reflection/beam-1.0-501b-a23b:free": {
+    "set_a_mean": 9.4,
+    "set_b_mean": 8.8,
+    "gap_A_minus_B": 0.6,
+    "set_c_mean": 5.0,
+    "control_accuracy": 7.0,
+    "n": 14,
+    "per_task": {
+      "overflow": 7,
+      "rubixi": 10,
+      "unprotected": 10,
+      "mut_overflow": 10,
+      "mut_unprotected": 10,
+      "ctl_vault": 10,
+      "kotet": 10,
+      "race": 10,
+      "mut_kotet": 4,
+      "mut_race": 10,
+      "mut_rubixi": 10,
+      "dao": 10,
+      "spankchain": 0,
+      "ctl_erc20": 4
+    }
+  },
+  "upstage/solar-mini4:free": {
+    "set_a_mean": 4.6,
+    "set_b_mean": 2.0,
+    "gap_A_minus_B": 2.6,
+    "set_c_mean": 0.5,
+    "control_accuracy": 0.0,
+    "n": 14,
+    "per_task": {
+      "kotet": 0,
+      "overflow": 10,
+      "race": 3,
+      "rubixi": 0,
+      "unprotected": 10,
+      "mut_kotet": 0,
+      "mut_overflow": 8,
+      "mut_race": 0,
+      "mut_rubixi": 0,
+      "mut_unprotected": 2,
+      "ctl_erc20": 0,
+      "ctl_vault": 0,
+      "dao": 0,
+      "spankchain": 1
+    }
+  }
+}

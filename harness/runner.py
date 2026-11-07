@@ -17,7 +17,7 @@ RESULTS_DIR = ROOT / "results"
 
 def load_tasks():
     tasks = []
-    for set_name in ["set_a", "set_b", "controls"]:
+    for set_name in ["set_a", "set_b", "set_c", "controls"]:
         d = TASKS_DIR / set_name
         if not d.exists():
             continue
@@ -34,7 +34,7 @@ def make_client():
     return OpenAI(base_url=creds["base_url"], api_key=creds["api_key"], max_retries=0)
 
 
-def run_one(client, model, task, timeout=240):
+def run_one(client, model, task, timeout=600):
     prompt = config.TASK_PROMPT.format(source=task["source"])
     delay = 20
     for attempt in range(6):
@@ -42,10 +42,15 @@ def run_one(client, model, task, timeout=240):
             resp = client.chat.completions.create(
                 model=model,
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=2048,
+                max_tokens=8192,
                 timeout=timeout,
             )
-            return {"ok": True, "answer": resp.choices[0].message.content or ""}
+            msg = resp.choices[0].message
+            content = msg.content or ""
+            if not content.strip():
+                # some models spend the whole budget on reasoning; recover it
+                content = getattr(msg, "reasoning_content", None) or ""
+            return {"ok": True, "answer": content, "finish": resp.choices[0].finish_reason}
         except Exception as e:
             msg = str(e)
             if "429" in msg:

@@ -13,7 +13,7 @@ TASKS_DIR = ROOT / "tasks"
 
 def load_tasks():
     tasks = {}
-    for set_name in ["set_a", "set_b", "controls"]:
+    for set_name in ["set_a", "set_b", "set_c", "controls"]:
         d = TASKS_DIR / set_name
         if not d.exists():
             continue
@@ -41,22 +41,26 @@ def grade_one(client, judge_model, task, answer):
         max_exploit=config.RUBRIC["exploit_path"],
         max_fix=config.RUBRIC["fix"],
     )
-    try:
-        resp = client.chat.completions.create(
-            model=judge_model,
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=512,
-            timeout=180,
-        )
-        text = resp.choices[0].message.content or ""
-        m = re.search(r"\{.*\}", text, re.S)
-        if not m:
-            return {"ok": False, "error": "no json", "raw": text[:300]}
-        data = json.loads(m.group(0))
-        total = sum(int(data.get(k, 0)) for k in ["root_cause", "impact", "exploit_path", "fix"])
-        return {"ok": True, **data, "total": total}
-    except Exception as e:
-        return {"ok": False, "error": str(e)}
+    import time as _t
+    for attempt in range(4):
+        try:
+            resp = client.chat.completions.create(
+                model=judge_model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=2048,
+                timeout=180,
+            )
+            text = resp.choices[0].message.content or ""
+            m = re.search(r"\{.*\}", text, re.S)
+            if not m:
+                _t.sleep(3)
+                continue
+            data = json.loads(m.group(0))
+            total = sum(int(data.get(k, 0)) for k in ["root_cause", "impact", "exploit_path", "fix"])
+            return {"ok": True, **data, "total": total}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+    return {"ok": False, "error": "no json after retries"}
 
 
 def main():
