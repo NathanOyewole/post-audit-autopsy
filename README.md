@@ -6,7 +6,11 @@ An eval that measures whether models can find real vulnerabilities in smart cont
 
 Built for the micro1 Eval Hackathon.
 
-**Video walkthrough:** [link to be added — YouTube/Loom/Drive]
+**Video walkthrough:** https://drive.google.com/file/d/17cc5PzrqOz2ePzogGe5rjV4lXy3KhmR2/view?usp=drivesdk
+
+## Short description
+
+Post-Audit Autopsy is a reproducible eval that measures whether AI models can reason about smart-contract vulnerabilities they haven't memorized. It runs 12 tasks across three sets — real vulnerable contracts, size-matched renamed mutations of the same bugs, and large real contracts — plus 2 benign controls, scored 0–10 on root cause, impact, exploit path, and fix. Key finding: free models find simple bugs but drop sharply on novel variants and hallucinate vulnerabilities in safe code; all models fail on the hardest large contracts.
 
 ---
 
